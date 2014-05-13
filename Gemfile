@@ -1,3 +1,5 @@
 source 'https://rubygems.org'
+gem 'minitest', '~> 4.7'
+gem 'minitest-reporters'
 gem 'rspec'
 gem 'rspec-given'
