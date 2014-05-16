@@ -33,23 +33,16 @@ def update_backstage_pass(item)
   update_any_non_legendary_item(item)
 end
 
-def update_legendary_item(item)
-end
-
 def update_quality(items)
   items.each do | item |
     if item.name == "NORMAL ITEM"
       update_normal_item(item)
     elsif item.name == "Aged Brie"
       update_aged_brie_item(item)
-    elsif item.name == "Sulfuras, Hand of Ragnaros"
-      update_legendary_item(item)
     elsif item.name == "Backstage passes to a TAFKAL80ETC concert"
       update_backstage_pass(item)
     elsif item.name == "Conjured Mana Cake"
       update_conjured_item(item)
-    else
-      raise "Unknown item: #{item}"
     end
   end
 end
