@@ -1,43 +1,51 @@
 require 'dumb_delegator'
 
-def shared_update_behavior(item)
-  item.quality = [item.quality, 0].max
-  item.quality = [item.quality, 50].min
-  item.sell_in -= 1
-end
-
-def update_normal_item(item, multiplier = 1, direction = :-)
-  rate_of_change = item.sell_in > 0 ? 1 : 2
-  rate_of_change *= multiplier
-  item.quality = item.quality.send( direction, rate_of_change )
-  shared_update_behavior(item)
-end
-
-def update_backstage_pass(item)
-  case item.sell_in
-  when ->(days) { days >= 11 }
-    item.quality += 1
-  when 6..10
-    item.quality += 2
-  when 1..5
-    item.quality += 3
-  else
-    item.quality = 0
+class AbstractUpdater < DumbDelegator
+  private
+  
+  def update
+    self.quality = [quality, 0].max
+    self.quality = [quality, 50].min
+    self.sell_in -= 1
   end
-  shared_update_behavior(item)
+end
+
+class NormalUpdater < AbstractUpdater
+  def update( multiplier = 1, direction = :- )
+    rate_of_change = sell_in > 0 ? 1 : 2
+    rate_of_change *= multiplier
+    self.quality = quality.send( direction, rate_of_change )
+    super()
+  end
+end
+
+class BackstageUpdater < AbstractUpdater
+  def update
+    case sell_in
+    when ->(days) { days >= 11 }
+      self.quality += 1
+    when 6..10
+      self.quality += 2
+    when 1..5
+      self.quality += 3
+    else
+      self.quality = 0
+    end
+    super()
+  end
 end
 
 def update_quality(items)
   items.each do | item |
     case item.name
     when "NORMAL ITEM"
-      update_normal_item(item)
+      NormalUpdater.new(item).update
     when "Aged Brie"
-      update_normal_item(item, 1, :+)
+      NormalUpdater.new(item).update( 1, :+ )
     when "Backstage passes to a TAFKAL80ETC concert"
-      update_backstage_pass(item)
+      BackstageUpdater.new(item).update
     when "Conjured Mana Cake"
-      update_normal_item(item, 2)
+      NormalUpdater.new(item).update( 2 )
     end
   end
 end
