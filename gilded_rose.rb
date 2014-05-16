@@ -38,7 +38,7 @@ end
 def update_quality(items)
   items.each do | item |
     case item.name
-    when "NORMAL ITEM"
+    when /^NORMAL/i
       NormalUpdater.new(item).call
     when "Aged Brie"
       NormalUpdater.new(item).call( 1, :+ )
