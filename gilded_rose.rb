@@ -4,10 +4,10 @@ def update_any_non_legendary_item(item)
   item.sell_in -= 1
 end
 
-def update_normal_item(item, multiplier = 1)
+def update_normal_item(item, multiplier = 1, direction = :-)
   degradation_rate = item.sell_in > 0 ? 1 : 2
   degradation_rate *= multiplier
-  item.quality -= degradation_rate
+  item.quality = item.quality.send( direction, degradation_rate )
   update_any_non_legendary_item(item)
 end
 
@@ -16,9 +16,7 @@ def update_conjured_item(item)
 end
 
 def update_aged_brie_item(item)
-  enhancement_rate = item.sell_in > 0 ? 1 : 2
-  item.quality += enhancement_rate
-  update_any_non_legendary_item(item)
+  update_normal_item(item, 1, :+)
 end
 
 def update_backstage_pass(item)
