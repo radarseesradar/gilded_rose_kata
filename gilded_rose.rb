@@ -4,16 +4,15 @@ def update_any_non_legendary_item(item)
   item.sell_in -= 1
 end
 
-def update_normal_item(item)
+def update_normal_item(item, multiplier = 1)
   degradation_rate = item.sell_in > 0 ? 1 : 2
+  degradation_rate *= multiplier
   item.quality -= degradation_rate
   update_any_non_legendary_item(item)
 end
 
 def update_conjured_item(item)
-  degradation_rate = item.sell_in > 0 ? 2 : 4
-  item.quality -= degradation_rate
-  update_any_non_legendary_item(item)
+  update_normal_item(item, 2)
 end
 
 def update_aged_brie_item(item)
