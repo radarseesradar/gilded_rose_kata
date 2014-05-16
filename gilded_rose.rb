@@ -1,47 +1,58 @@
+def update_any_non_legendary_item(item)
+  item.quality = [item.quality, 0].max
+  item.quality = [item.quality, 50].min
+  item.sell_in -= 1
+end
+
+def update_normal_item(item)
+  degradation_rate = item.sell_in > 0 ? 1 : 2
+  item.quality -= degradation_rate
+  update_any_non_legendary_item(item)
+end
+
+def update_conjured_item(item)
+  degradation_rate = item.sell_in > 0 ? 2 : 4
+  item.quality -= degradation_rate
+  update_any_non_legendary_item(item)
+end
+
+def update_aged_brie_item(item)
+  enhancement_rate = item.sell_in > 0 ? 1 : 2
+  item.quality += enhancement_rate
+  update_any_non_legendary_item(item)
+end
+
+def update_backstage_pass(item)
+  case item.sell_in
+  when ->(days) { days >= 11 }
+    item.quality += 1
+  when 6..10
+    item.quality += 2
+  when 1..5
+    item.quality += 3
+  else
+    item.quality = 0
+  end
+  update_any_non_legendary_item(item)
+end
+
+def update_legendary_item(item)
+end
+
 def update_quality(items)
-  items.each do |item|
-    if item.name != 'Aged Brie' && item.name != 'Backstage passes to a TAFKAL80ETC concert'
-      if item.quality > 0
-        if item.name != 'Sulfuras, Hand of Ragnaros'
-          item.quality -= 1
-        end
-      end
+  items.each do | item |
+    if item.name == "NORMAL ITEM"
+      update_normal_item(item)
+    elsif item.name == "Aged Brie"
+      update_aged_brie_item(item)
+    elsif item.name == "Sulfuras, Hand of Ragnaros"
+      update_legendary_item(item)
+    elsif item.name == "Backstage passes to a TAFKAL80ETC concert"
+      update_backstage_pass(item)
+    elsif item.name == "Conjured Mana Cake"
+      update_conjured_item(item)
     else
-      if item.quality < 50
-        item.quality += 1
-        if item.name == 'Backstage passes to a TAFKAL80ETC concert'
-          if item.sell_in < 11
-            if item.quality < 50
-              item.quality += 1
-            end
-          end
-          if item.sell_in < 6
-            if item.quality < 50
-              item.quality += 1
-            end
-          end
-        end
-      end
-    end
-    if item.name != 'Sulfuras, Hand of Ragnaros'
-      item.sell_in -= 1
-    end
-    if item.sell_in < 0
-      if item.name != "Aged Brie"
-        if item.name != 'Backstage passes to a TAFKAL80ETC concert'
-          if item.quality > 0
-            if item.name != 'Sulfuras, Hand of Ragnaros'
-              item.quality -= 1
-            end
-          end
-        else
-          item.quality = item.quality - item.quality
-        end
-      else
-        if item.quality < 50
-          item.quality += 1
-        end
-      end
+      raise "Unknown item: #{item}"
     end
   end
 end
