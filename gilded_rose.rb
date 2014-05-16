@@ -27,13 +27,14 @@ end
 
 def update_quality(items)
   items.each do | item |
-    if item.name == "NORMAL ITEM"
+    case item.name
+    when "NORMAL ITEM"
       update_normal_item(item)
-    elsif item.name == "Aged Brie"
+    when "Aged Brie"
       update_normal_item(item, 1, :+)
-    elsif item.name == "Backstage passes to a TAFKAL80ETC concert"
+    when "Backstage passes to a TAFKAL80ETC concert"
       update_backstage_pass(item)
-    elsif item.name == "Conjured Mana Cake"
+    when "Conjured Mana Cake"
       update_normal_item(item, 2)
     end
   end
