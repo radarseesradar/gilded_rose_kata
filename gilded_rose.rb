@@ -3,7 +3,7 @@ require 'dumb_delegator'
 class AbstractUpdater < DumbDelegator
   private
   
-  def update
+  def call
     self.quality = [quality, 0].max
     self.quality = [quality, 50].min
     self.sell_in -= 1
@@ -11,7 +11,7 @@ class AbstractUpdater < DumbDelegator
 end
 
 class NormalUpdater < AbstractUpdater
-  def update( multiplier = 1, direction = :- )
+  def call( multiplier = 1, direction = :- )
     rate_of_change = sell_in > 0 ? 1 : 2
     rate_of_change *= multiplier
     self.quality = quality.send( direction, rate_of_change )
@@ -20,7 +20,7 @@ class NormalUpdater < AbstractUpdater
 end
 
 class BackstageUpdater < AbstractUpdater
-  def update
+  def call
     case sell_in
     when ->(days) { days >= 11 }
       self.quality += 1
@@ -39,13 +39,13 @@ def update_quality(items)
   items.each do | item |
     case item.name
     when "NORMAL ITEM"
-      NormalUpdater.new(item).update
+      NormalUpdater.new(item).call
     when "Aged Brie"
-      NormalUpdater.new(item).update( 1, :+ )
+      NormalUpdater.new(item).call( 1, :+ )
     when "Backstage passes to a TAFKAL80ETC concert"
-      BackstageUpdater.new(item).update
+      BackstageUpdater.new(item).call
     when "Conjured Mana Cake"
-      NormalUpdater.new(item).update( 2 )
+      NormalUpdater.new(item).call( 2 )
     end
   end
 end
