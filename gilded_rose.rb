@@ -1,3 +1,5 @@
+require 'dumb_delegator'
+
 def shared_update_behavior(item)
   item.quality = [item.quality, 0].max
   item.quality = [item.quality, 50].min
