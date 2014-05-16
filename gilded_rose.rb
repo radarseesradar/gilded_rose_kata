@@ -27,7 +27,7 @@ end
 
 def update_quality(items)
   items.each do | item |
-    if item.name == "NORMAL ITEM"
+    if item.name =~ /^NORMAL/i
       update_normal_item(item)
     elsif item.name == "Aged Brie"
       update_normal_item(item, 1, :+)
