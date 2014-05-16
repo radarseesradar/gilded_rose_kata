@@ -5,9 +5,9 @@ def update_any_non_legendary_item(item)
 end
 
 def update_normal_item(item, multiplier = 1, direction = :-)
-  degradation_rate = item.sell_in > 0 ? 1 : 2
-  degradation_rate *= multiplier
-  item.quality = item.quality.send( direction, degradation_rate )
+  rate_of_change = item.sell_in > 0 ? 1 : 2
+  rate_of_change *= multiplier
+  item.quality = item.quality.send( direction, rate_of_change )
   update_any_non_legendary_item(item)
 end
 
