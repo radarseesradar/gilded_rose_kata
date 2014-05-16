@@ -11,14 +11,6 @@ def update_normal_item(item, multiplier = 1, direction = :-)
   update_any_non_legendary_item(item)
 end
 
-def update_conjured_item(item)
-  update_normal_item(item, 2)
-end
-
-def update_aged_brie_item(item)
-  update_normal_item(item, 1, :+)
-end
-
 def update_backstage_pass(item)
   case item.sell_in
   when ->(days) { days >= 11 }
@@ -38,11 +30,11 @@ def update_quality(items)
     if item.name == "NORMAL ITEM"
       update_normal_item(item)
     elsif item.name == "Aged Brie"
-      update_aged_brie_item(item)
+      update_normal_item(item, 1, :+)
     elsif item.name == "Backstage passes to a TAFKAL80ETC concert"
       update_backstage_pass(item)
     elsif item.name == "Conjured Mana Cake"
-      update_conjured_item(item)
+      update_normal_item(item, 2)
     end
   end
 end
