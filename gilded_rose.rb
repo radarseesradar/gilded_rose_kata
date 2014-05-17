@@ -41,18 +41,43 @@ class BackstageUpdater < AbstractUpdater
   end
 end
 
+class PatternStrategy
+  attr_reader :strategy
+
+  def initialize( pattern, strategy = nil )
+    @pattern = pattern
+    @strategy = strategy
+  end
+  
+  def match?( aString )
+    @pattern =~ aString
+  end
+end
+
+class PatternEngine
+  def initialize( *somePatterStrategies )
+    @pattern_strategies = somePatterStrategies
+  end
+  
+  def find_and_execute( aString, aDataObj = nil )
+    pattern_strategy = @pattern_strategies.find{ |ps| ps.match?( aString ) } 
+    return unless pattern_strategy
+    strategy = pattern_strategy.strategy
+    strategy.__setobj__( aDataObj ) if aDataObj && strategy.respond_to?(:__setobj__)
+    strategy.call
+  end
+end
+
+PATTERN_ENGINE = PatternEngine.new(
+  PatternStrategy.new( /^NORMAL/i,  NormalUpdater.new("placeholder") ),
+  PatternStrategy.new( /Aged Brie/, NormalUpdater.new("placeholder", 1, :+) ),
+  PatternStrategy.new( /Backstage passes to a TAFKAL80ETC concert/, BackstageUpdater.new("placeholder")  ),
+  PatternStrategy.new( /Conjured Mana Cake/,  NormalUpdater.new("placeholder", 2) )
+)
+
 def update_quality(items)
   items.each do | item |
-    case item.name
-    when /^NORMAL/i
-      NormalUpdater.new(item).call
-    when "Aged Brie"
-      NormalUpdater.new(item, 1, :+).call
-    when "Backstage passes to a TAFKAL80ETC concert"
-      BackstageUpdater.new(item).call
-    when "Conjured Mana Cake"
-      NormalUpdater.new(item, 2).call
-    end
+    PATTERN_ENGINE.find_and_execute( item.name, item )
   end
 end
 
