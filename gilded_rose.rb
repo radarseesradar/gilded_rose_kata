@@ -11,10 +11,16 @@ class AbstractUpdater < DumbDelegator
 end
 
 class NormalUpdater < AbstractUpdater
-  def call( multiplier = 1, direction = :- )
+  def initialize( item, multiplier = 1, direction = :- )
+    super(item)
+    @multiplier = multiplier
+    @direction = direction
+  end
+
+  def call
     rate_of_change = sell_in > 0 ? 1 : 2
-    rate_of_change *= multiplier
-    self.quality = quality.send( direction, rate_of_change )
+    rate_of_change *= @multiplier
+    self.quality = quality.send( @direction, rate_of_change )
     super()
   end
 end
@@ -41,11 +47,11 @@ def update_quality(items)
     when /^NORMAL/i
       NormalUpdater.new(item).call
     when "Aged Brie"
-      NormalUpdater.new(item).call( 1, :+ )
+      NormalUpdater.new(item, 1, :+).call
     when "Backstage passes to a TAFKAL80ETC concert"
       BackstageUpdater.new(item).call
     when "Conjured Mana Cake"
-      NormalUpdater.new(item).call( 2 )
+      NormalUpdater.new(item, 2).call
     end
   end
 end
